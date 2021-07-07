@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--1.在html页面中引入thymeleaf命名空间，在html模板文件中动态的属性使用th:命名空间修饰 。
+    2.th:with能定义局部变量
+        当th:with被处理,pic变量创建一个局部变量和变量添加到map自上下文,
+        以便它是用于评估和其他上下文中声明的变量从开始,但只有包含<html>标记的范围内。
+        eg: th:with="firstPer=${persons[0]},secondPer=${persons[1]}"
+            定义两个局部变量：firstPer,secondPer 可以通过对象取值：【只在当前父标签中有效】
+                <span th:text="${firstPer.name}">Tom</span>.
+                <span th:text="${secondPer.name}">Junes</span>.
+    3.@{${pic}}:为URL表达式@{}和变量表达式${}
+
+    -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="pic=${commons.random(5, '.png')}"
+      th:style="'background:url(/admin/images/bg/'+@{${pic}}+');no-repeat; background-size: cover;'">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+   <!-- 引用静态资源文件(CSS使用th:href，js使用使用th:src)
+        使用link rel="shortcut icon"为网页标题加图标：    -->
+    <link rel="shortcut icon" th:href="@{/admin/images/favicon.png}"/>
+    <title>My Blog - 用户登录</title>
+    <!--https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css
+        在bootstrap框架的使用中，字体图标必不可少，Font Awesome 一套绝佳的图标字体库和CSS框架
+        您可以将Font Awesome图标使用在几乎任何地方，只需要使用CSS前缀 fa ，再加上图标名称。
+        eg：<i class="fa fa-home fa-fw"></i>&nbsp;主页
+            <i class="fa fa-book fa-fw"></i>&nbsp; 图书馆
+    -->
+    <link th:href="@{//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet"/>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/admin/css/style.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{//cdn.bootcss.com/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet"/>
+
+    <!-- HTML5填充和响应.js IE8支持HTML5元素和媒体查询 -->
+    <!-- 警告：如果您通过以下文件查看页面，Respond.js将不起作用：// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .panel-shadow {
+            -moz-box-shadow: 0px 0px 10px 0px rgba(39, 49, 65, 0.1);
+            -webkit-box-shadow: 0px 0px 10px 0px rgba(39, 49, 65, 0.1);
+            box-shadow: 0px 0px 10px 0px rgba(39, 49, 65, 0.1);
+        }
+        .bg-overlay {
+            -moz-border-radius: 6px 6px 0 0;
+            -webkit-border-radius: 6px 6px 0 0;
+            background-color: rgba(47, 51, 62, 0.3);
+            border-radius: 6px 6px 0 0;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+        .input-border {b1.png
+            font-size: 14px;
+            width: 100%;
+            height: 40px;
+            border-radius: 0;
+            border: none;
+            border-bottom: 1px solid #dadada;
+        }
+
+        .bg-img > h3 {
+            text-shadow: 0px 2px 3px #555;
+            color: #cac9c8;
+        }
+    </style>
+
+</head>
+<!-- th:style 设置标签样式，多个样式需要拼接
+  eg：
+     只设置一个属性的情况： <p th:style="'font-size:' + ${font-size}"></p>
+     页面实际解析为： <p th:style="font-size:100px"></p>
+     设置多个属性的情况: <p th:style="'font-size:' + ${font-size} + '; font-weight:' + ${font-weight}"></p>
+     页面实际解析为： <p th:style="font-size:100px; font-weight:700"></p>
+     也可以像这样追加一个：<p th:style="'font-size:' + ${font-size} + ';' + " th:styleappend ="'font-weight:' + ${font-weight}" ></p>
+     页面实际解析为：<p th:style="font-size:100px; font-weight:700"></p>
+     也可以像这样追加多个：<p th:style="'font-size:' + ${font-size} + ';'" th:styleappend ="'font-weight:' + ${font-weight} + '; font-family:' + ${font-family}" ></p>
+     页面实际解析为：<p th:style="font-size:100px; font-weight:700; font-family:courier"></p>
+ -->
+<body th:style="'background:url(/admin/images/bg/'+@{${pic}}+');no-repeat; background-size: cover;'" >
+<div style="margin: 0 auto; padding-bottom: 0%; padding-top: 7.5%; width: 380px;">
+    <div class="panel panel-color panel-danger panel-pages panel-shadow">
+        <div class="panel-heading bg-img">
+            <div class="bg-overlay"></div>
+            <h3 class="text-center m-t-10"> Login My Blog</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal m-t-20" method="post" id="loginForm" onsubmit="return checkForm()">
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input class=" input-lg input-border" name="username" type="text" required=""
+                               placeholder="账号:"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <input class=" input-lg input-border" name="password" type="password" required=""
+                               placeholder="密码:"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="checkbox checkbox-danger">
+                            <input id="checkbox-signup" name="remeber_me" type="checkbox"/>
+
+                            <label for="checkbox-signup">记住我</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group text-center m-t-40">
+                    <div class="col-xs-12">
+                        <button class="btn btn-danger btn-lg btn-rounded btn-block w-lg waves-effect waves-light" style="box-shadow: 0px 0px 4px #868282;" type="submit">
+                            登&nbsp;录
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Main  -->
+<script th:src="@{//cdn.bootcss.com/jquery/2.2.3/jquery.min.js}"></script>
+<script th:src="@{//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js}"></script>
+<script th:src="@{//cdn.bootcss.com/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+<script th:src="@{/admin/js/base.js}"></script>
+<script type="text/javascript">
+    /*<![CDATA[
+     * 自定义全局对象函数
+     */
+    var tale = new $.tale();
+    function checkForm() {
+        //调用自定义函数的 post方法
+        tale.post({
+            url: '/admin/login',
+            data: $("#loginForm").serialize(),
+            success: function (result) {
+                if (result && result.success) {
+                    window.location.href = '/admin/index';
+                } else {
+                    tale.alertError(result.msg || '登录失败');
+                }
+            }
+        });
+        return false;
+    }
+    /*]]>*/
+</script>
+</body>
+</html>
